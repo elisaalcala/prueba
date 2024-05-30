@@ -10,36 +10,55 @@ import java.time.format.DateTimeFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
+import com.app.alcala.AlcalaApplication;
 
-@SpringBootTest
+@SpringBootTest(classes = AlcalaApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReleaseAndProjectTest {
-
-    private static WebDriver driver;
     
-    @BeforeAll
-    public static void setUp() {
-        WebDriverManager.edgedriver().setup();
-     // Configurar el navegador Edge para modo headless
-        EdgeOptions options = new EdgeOptions();
-        options.addArguments("--headless"); 
-        options.addArguments("--disable-gpu");
-       
-        driver = new EdgeDriver(options);
-        driver.get("https://localhost:8443/login");
+    @LocalServerPort
+    int port;
 
+    private WebDriver driver;
+    private WebDriverWait wait;
+
+    @BeforeEach
+    public void setUpTest() {
+        ChromeOptions options = new ChromeOptions();
+        // options.addArguments("--headless");
+        options.addArguments("--allow-insecure-localhost");
+        // options.addArguments("--disable-gpu");
+
+        driver = new ChromeDriver(options);
+        this.wait = new WebDriverWait(driver, Duration.ofSeconds(200));
+        
+    }
+
+    @AfterEach
+    public void tearDown() {
+        if (driver != null) {
+            this.driver.quit();
+        }
+    }
+
+    @Test
+    public void pruebaTest() {
+        driver.get("https://localhost:"+this.port+"/login");
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("details-button")));
+        
         WebElement detailsButtonField = driver.findElement(By.id("details-button"));
         detailsButtonField.click();
         WebElement proceedLinkField = driver.findElement(By.id("proceed-link"));
@@ -55,22 +74,16 @@ public class ReleaseAndProjectTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dailywork")));
     }
-    
-    @AfterAll
-    public static void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
-    
-    public String test1_CreateRelease() {
-    	WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
+
+    // @Test
+    public void test1_CreateRelease() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
         WebElement button = driver.findElement(By.cssSelector("button[data-bs-target='#createModalRelease']"));
         button.click();
 
         WebElement modal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createModalRelease")));
         assertTrue(modal.isDisplayed(), "Modal did not open on button click");
-        
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate initialDate = LocalDate.of(2023, 6, 1);
         LocalDate requirementsDate = LocalDate.of(2023, 6, 10);
@@ -88,10 +101,9 @@ public class ReleaseAndProjectTest {
         driver.findElement(By.id("createUatDate")).sendKeys(uatDate.format(formatter));
         driver.findElement(By.id("createProDate")).sendKeys(proDate.format(formatter));
 
-
         WebElement saveButton = driver.findElement(By.id("saveReleaseButton"));
         saveButton.click();
-        
+
         wait.until(ExpectedConditions.urlMatches(Pattern.compile("https://localhost:8443/releases/\\d+").toString()));
 
         String currentUrl = driver.getCurrentUrl();
@@ -100,25 +112,25 @@ public class ReleaseAndProjectTest {
         Matcher matcher = pattern.matcher(currentUrl);
 
         String releaseId = null;
-        
+
         if (matcher.find()) {
-            releaseId = matcher.group(1); 
+            releaseId = matcher.group(1);
             System.out.println("El ID de la release creado es: " + releaseId);
         } else {
             System.out.println("No se encontró el ID de la releases en la URL.");
         }
 
-        assertTrue(currentUrl.matches("https://localhost:8443/releases/\\d+"), "La URL de redirección no es la esperada: " + currentUrl);
+        assertTrue(currentUrl.matches("https://localhost:8443/releases/\\d+"),
+                "La URL de redirección no es la esperada: " + currentUrl);
 
         System.out.println("El último número de la URL es: " + releaseId);
-        
-        return releaseId;
+
+        // return releaseId;
     }
 
-    
     public void test2_EditRelease(String id) {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        
+
         WebElement editButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("editButton")));
         editButton.click();
 
@@ -133,16 +145,17 @@ public class ReleaseAndProjectTest {
 
         WebElement updateButton = driver.findElement(By.id("updateReleaseButton"));
         updateButton.click();
-        
-        driver.get("https://localhost:8443/releases/"+ id);
+
+        driver.get("https://localhost:8443/releases/" + id);
         WebElement proDate = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("proDate")));
         assertEquals("01/03/2024", proDate.getText());
-    
+
     }
-    
+
     public String test3_CreateProject(String id) {
-    	WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10)); 
-        WebElement createProjectButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("createProjectButton")));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        WebElement createProjectButton = wait
+                .until(ExpectedConditions.elementToBeClickable(By.id("createProjectButton")));
         createProjectButton.click();
 
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("createModalProject")));
@@ -167,8 +180,7 @@ public class ReleaseAndProjectTest {
 
         WebElement createButton = driver.findElement(By.id("saveProjectButton"));
         createButton.click();
-        
-        
+
         wait.until(ExpectedConditions.urlMatches(Pattern.compile("https://localhost:8443/projects/\\d+").toString()));
 
         String currentUrl = driver.getCurrentUrl();
@@ -177,27 +189,28 @@ public class ReleaseAndProjectTest {
         Matcher matcher = pattern.matcher(currentUrl);
 
         String projectId = null;
-        
+
         if (matcher.find()) {
-        	projectId = matcher.group(1); 
+            projectId = matcher.group(1);
             System.out.println("El ID de project creado es: " + projectId);
         } else {
             System.out.println("No se encontró el ID de project en la URL.");
         }
 
-        assertTrue(currentUrl.matches("https://localhost:8443/projects/\\d+"), "La URL de redirección no es la esperada: " + currentUrl);
+        assertTrue(currentUrl.matches("https://localhost:8443/projects/\\d+"),
+                "La URL de redirección no es la esperada: " + currentUrl);
 
         System.out.println("El último número de la URL es: " + projectId);
-        
+
         return projectId;
 
     }
-    
+
     public void test4_AssignProject() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         WebElement assignButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("assignButton")));
         assignButton.click();
-        
+
         WebElement assignModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("assignModalProject")));
         assertTrue(assignModal.isDisplayed(), "El modal de asignación no se ha abierto");
 
@@ -217,7 +230,7 @@ public class ReleaseAndProjectTest {
         WebElement changeStatusButton = driver.findElement(By.id("changeStatusButtonProject"));
         changeStatusButton.click();
 
-        WebElement newStatusOption = driver.findElement(By.id("Closed")); 
+        WebElement newStatusOption = driver.findElement(By.id("Closed"));
         newStatusOption.click();
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("ticketStatus"), "Closed"));
@@ -239,9 +252,10 @@ public class ReleaseAndProjectTest {
 
         WebElement saveChangesButton = driver.findElement(By.id("saveChangesButtonProject"));
         saveChangesButton.click();
-        
-        wait.until(ExpectedConditions.attributeToBe(By.id("descripcionProject"), "value", "Nueva descripción del proyecto"));
-        WebElement updatedDescriptionField = driver.findElement(By.id("descripcionProject")); 
+
+        wait.until(ExpectedConditions.attributeToBe(By.id("descripcionProject"), "value",
+                "Nueva descripción del proyecto"));
+        WebElement updatedDescriptionField = driver.findElement(By.id("descripcionProject"));
         assertEquals("Nueva descripción del proyecto", updatedDescriptionField.getAttribute("value"));
     }
 
@@ -250,47 +264,51 @@ public class ReleaseAndProjectTest {
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("deleteButton")));
-        
+
         deleteButton.click();
 
-        WebElement deleteConfirmationModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteModalProject")));
+        WebElement deleteConfirmationModal = wait
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteModalProject")));
         assertTrue(deleteConfirmationModal.isDisplayed());
 
-        WebElement confirmDeleteButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("deleteTicketButtonProject")));
+        WebElement confirmDeleteButton = wait
+                .until(ExpectedConditions.elementToBeClickable(By.id("deleteTicketButtonProject")));
         confirmDeleteButton.click();
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("deleteModalProject")));
 
-        assertFalse(driver.getPageSource().contains("Test Project Title")); 
+        assertFalse(driver.getPageSource().contains("Test Project Title"));
     }
+
     public void test8_DeleteRelease(String id) {
-    	
+
         driver.get("https://localhost:8443/releases/" + id);
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("deleteButton")));
-        
+
         deleteButton.click();
 
-        WebElement deleteConfirmationModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteModalRelease")));
+        WebElement deleteConfirmationModal = wait
+                .until(ExpectedConditions.visibilityOfElementLocated(By.id("deleteModalRelease")));
         assertTrue(deleteConfirmationModal.isDisplayed());
 
-        WebElement confirmDeleteButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("deleteTicketButtonRelease")));
+        WebElement confirmDeleteButton = wait
+                .until(ExpectedConditions.elementToBeClickable(By.id("deleteTicketButtonRelease")));
         confirmDeleteButton.click();
 
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("deleteModalRelease")));
 
     }
-    
-    @Test
-    public void test_release_and_project() {
-    	String id = test1_CreateRelease();
-//    	String idProject = test3_CreateProject(id);
-//    	test4_AssignProject();
-//    	test5_StatusProject();
-//    	test6_EditProject();
-//    	test7_DeleteProject(idProject);
-    	test8_DeleteRelease(id);
-    }
-}
 
+    // @Test
+    // public void test_release_and_project() {
+    //     String id = test1_CreateRelease();
+    //     // String idProject = test3_CreateProject(id);
+    //     // test4_AssignProject();
+    //     // test5_StatusProject();
+    //     // test6_EditProject();
+    //     // test7_DeleteProject(idProject);
+    //     test8_DeleteRelease(id);
+    // }
+}
