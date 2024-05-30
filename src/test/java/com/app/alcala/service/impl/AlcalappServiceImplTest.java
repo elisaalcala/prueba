@@ -17,9 +17,11 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.app.alcala.entities.Employee;
 import com.app.alcala.entities.Message;
@@ -36,7 +38,7 @@ import com.app.alcala.service.TicketService;
 import com.app.alcala.web.model.ProjectTable;
 import com.app.alcala.web.model.WorkLoad;
 import com.app.alcala.web.model.WorkPerEmployee;
-
+@ExtendWith(MockitoExtension.class)
 class AlcalappServiceImplTest {
 
     @InjectMocks

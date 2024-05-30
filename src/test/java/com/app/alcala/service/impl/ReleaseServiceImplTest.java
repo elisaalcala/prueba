@@ -13,15 +13,16 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.app.alcala.entities.Employee;
 import com.app.alcala.entities.Release;
 import com.app.alcala.repositories.ReleaseRepository;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class ReleaseServiceImplTest {
 
     @Mock

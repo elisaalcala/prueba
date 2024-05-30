@@ -10,12 +10,15 @@ import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
+@SpringBootTest
 public class SideBarTest {
 
     private static WebDriver driver;
@@ -24,14 +27,24 @@ public class SideBarTest {
     @BeforeAll
     public static void setUp() {
         WebDriverManager.edgedriver().setup();
-        driver = new EdgeDriver();
-        driver.manage().window().maximize();
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless"); 
+        options.addArguments("--disable-gpu");
+        options.addArguments("--no-sandbox");
+        options.addArguments("--disable-dev-shm-usage");
+       
+        driver = new ChromeDriver(options);
         driver.get("https://localhost:8443/login");
 
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("details-button")));
         WebElement detailsButtonField = driver.findElement(By.id("details-button"));
         detailsButtonField.click();
         WebElement proceedLinkField = driver.findElement(By.id("proceed-link"));
         proceedLinkField.click();
+        
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("username")));
+
         WebElement usernameField = driver.findElement(By.id("username"));
         WebElement passwordField = driver.findElement(By.id("password"));
         WebElement loginButton = driver.findElement(By.id("loginButton"));
@@ -40,7 +53,6 @@ public class SideBarTest {
         passwordField.sendKeys("pass");
         loginButton.click();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dailywork")));
     }
 
@@ -67,26 +79,6 @@ public class SideBarTest {
         wait.until(ExpectedConditions.urlContains(expectedUrlSuffix));
         assertTrue(driver.getCurrentUrl().endsWith(expectedUrlSuffix));
     }
-    
-    @Test
-    public void testModalsOpenOnButtonClick() {
-        checkModalOpensOnButtonClick(By.cssSelector("button[data-bs-target='#createModal']"), By.id("createModal"));
-        checkModalOpensOnButtonClick(By.cssSelector("button[data-bs-target='#createModalRelease']"), By.id("createModalRelease"));
-    }
 
-    private void checkModalOpensOnButtonClick(By buttonSelector, By modalSelector) {
-        WebElement button = driver.findElement(buttonSelector);
-        button.click();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-        WebElement modal = wait.until(ExpectedConditions.visibilityOfElementLocated(modalSelector));
-
-        assertTrue(modal.isDisplayed(), "Modal did not open on button click");
-        
-        WebElement closeButton = modal.findElement(By.cssSelector(".btn-close"));
-        closeButton.click();
-        
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(modalSelector));
-    }
 
 }

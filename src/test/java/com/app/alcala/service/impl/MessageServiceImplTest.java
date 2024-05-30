@@ -8,15 +8,15 @@ import static org.mockito.Mockito.when;
 import java.sql.Timestamp;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.app.alcala.entities.Message;
 import com.app.alcala.repositories.MessageRepository;
-import com.app.alcala.service.impl.MessageServiceImpl;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class MessageServiceImplTest {
 
     @Mock

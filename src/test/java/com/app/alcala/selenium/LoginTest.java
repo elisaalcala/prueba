@@ -11,11 +11,14 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
 
+@SpringBootTest
 public class LoginTest {
 
     private WebDriver driver;
@@ -23,7 +26,11 @@ public class LoginTest {
     @BeforeEach
     public void setUp() {
     	WebDriverManager.edgedriver().setup();
-    	driver = new EdgeDriver();
+    	EdgeOptions options = new EdgeOptions();
+        options.addArguments("--headless"); 
+        options.addArguments("--disable-gpu");
+       
+        driver = new EdgeDriver(options);
         driver.get("https://localhost:8443/login");
         WebElement detailsButtonField = driver.findElement(By.id("details-button"));
         detailsButtonField.click();

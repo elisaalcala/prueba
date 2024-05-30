@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ProjectController.class)
 @Import(SecurityConfiguration.class)
+
 public class ProjectControllerTest {
 
     @Autowired

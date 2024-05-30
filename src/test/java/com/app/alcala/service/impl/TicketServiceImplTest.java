@@ -17,9 +17,10 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.app.alcala.entities.Employee;
 import com.app.alcala.entities.Message;
@@ -28,7 +29,7 @@ import com.app.alcala.entities.Ticket;
 import com.app.alcala.repositories.TicketRepository;
 import com.app.alcala.service.MessageService;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 public class TicketServiceImplTest {
 
     @Mock
@@ -60,11 +61,8 @@ public class TicketServiceImplTest {
         Employee employee = new Employee();
         employee.setUserEmployee("JohnDoe");
 
-        LocalDateTime currentDate = LocalDateTime.now();
-        Timestamp timestamp = Timestamp.valueOf(currentDate);
-
         when(ticketRepository.findById(1L)).thenReturn(Optional.of(ticket));
-        when(messageService.messageFinish(timestamp, employee.getUserEmployee())).thenReturn(new Message());
+        when(messageService.messageFinish(any(Timestamp.class), eq(employee.getUserEmployee()))).thenReturn(new Message());
         when(ticketRepository.save(ticket)).thenReturn(ticket);
         
         Ticket result = ticketService.editTicket(1L, updatedTicket, employee);
@@ -150,8 +148,6 @@ public class TicketServiceImplTest {
         Message message = new Message();
         Message messageAssign = new Message();
 
-        when(messageService.messageFinish(any(Timestamp.class), eq(employee.getUserEmployee()))).thenReturn(message);
-        when(messageService.messageFinish(any(Timestamp.class), eq(employee.getUserEmployee()))).thenReturn(messageAssign);
         when(ticketRepository.save(updatedTicket)).thenReturn(updatedTicket);
 
         Ticket result = ticketService.mapNewTicket(updatedTicket, employee, team, teamAssign, message, messageAssign);
