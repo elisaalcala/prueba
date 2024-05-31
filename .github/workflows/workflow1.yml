@@ -8,10 +8,10 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      mysql:
+      temp-mysql:
         image: mysql:8.0
         ports:
-          - 33306:3306
+          - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: 3301
           MYSQL_DATABASE: alcalapp_db
@@ -41,14 +41,14 @@ jobs:
 
       - name: Wait for MySQL to be ready
         run: |
-          until docker exec ${{ job.services.mysql.id }} mysqladmin ping --silent; do
+          until docker exec ${{ job.services.temp-mysql.id }} mysqladmin ping --silent; do
             echo "Waiting for MySQL..."
             sleep 3
           done
 
       - name: Run tests
         env:
-          DB_URL: jdbc:mysql://localhost:33306/alcalapp_db?serverTimezone=UTC
+          DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
           DB_USERNAME: root
           DB_PASSWORD: 3301
         run: mvn test
