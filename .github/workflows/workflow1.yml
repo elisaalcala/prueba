@@ -11,12 +11,10 @@ jobs:
       mysql:
         image: mysql:8.0
         ports:
-          - 3306:3306
+          - 33306:3306
         env:
           MYSQL_ROOT_PASSWORD: 3301
           MYSQL_DATABASE: alcalapp_db
-          MYSQL_USER: root
-          MYSQL_PASSWORD: 3301
         options: >-
           --health-cmd="mysqladmin ping --silent"
           --health-interval=10s
@@ -50,7 +48,7 @@ jobs:
 
       - name: Run tests
         env:
-          DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
+          DB_URL: jdbc:mysql://localhost:33306/alcalapp_db?serverTimezone=UTC
           DB_USERNAME: root
           DB_PASSWORD: 3301
         run: mvn test
