@@ -45,7 +45,6 @@ import com.app.alcala.web.model.WorkLoad;
 
 @WebMvcTest(AlcalappController.class)
 @Import(SecurityConfiguration.class)
-@ExtendWith(MockitoExtension.class)
 public class AlcalappControllerTest {
 
     @Autowired
@@ -113,7 +112,7 @@ public class AlcalappControllerTest {
     }
 
     @Test
-    @WithMockUser(username = "johndoe", password = "pass", roles = "USER")
+    @WithMockUser(username = "johndoe", roles = "USER")
     public void testDailyWorkPage() throws Exception {
         Employee employee = new Employee();
         employee.setNameTeam("TeamA");
@@ -154,7 +153,7 @@ public class AlcalappControllerTest {
     }
     
     @Test
-    @WithMockUser(username = "johndoe", password = "pass", roles = "USER")
+    @WithMockUser(username = "johndoe", roles = "USER")
     public void testMyWorkPage() throws Exception {
         Employee employee = new Employee();
         employee.setNameTeam("TeamA");
@@ -187,7 +186,7 @@ public class AlcalappControllerTest {
     }
     
     @Test
-    @WithMockUser(username = "johndoe", password = "pass", roles = "USER")
+    @WithMockUser(username = "johndoe", roles = "USER")
     public void testProfilePage() throws Exception {
         mockMvc.perform(get("/profile"))
                 .andExpect(status().isOk())

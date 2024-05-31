@@ -10,55 +10,67 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
+import com.app.alcala.AlcalaApplication;
 
 import io.github.bonigarcia.wdm.WebDriverManager;
-@SpringBootTest
+
+@SpringBootTest(classes = AlcalaApplication.class, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class TicketTest {
+    
+    @LocalServerPort
+    int port;
 
-    private static WebDriver driver;
+    private WebDriver driver;
+    private WebDriverWait wait;
 
-    @AfterAll
-    public static void tearDown() {
+    @BeforeEach
+    public void setUpTest() {
+        ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        options.addArguments("--allow-insecure-localhost");
+        options.addArguments("--disable-gpu");
+
+        driver = new ChromeDriver(options);
+        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        
+    }
+
+    @AfterEach
+    public void tearDown() {
         if (driver != null) {
             driver.quit();
         }
     }
     
-    public String test1_CreateTicket() {
-    	
-    	WebDriverManager.edgedriver().setup();
-    	EdgeOptions options = new EdgeOptions();
-        options.addArguments("--headless"); 
-        options.addArguments("--disable-gpu");
-       
-        driver = new EdgeDriver(options);
-        driver.get("https://localhost:8443/login");
+    @Test
+    public void testTicketActions() {
+    	driver.get("https://localhost:" + this.port + "/login");
+		WebElement usernameField = driver.findElement(By.id("username"));
+		WebElement passwordField = driver.findElement(By.id("password"));
+		WebElement loginButton = driver.findElement(By.id("loginButton"));
 
-        WebElement detailsButtonField = driver.findElement(By.id("details-button"));
-        detailsButtonField.click();
-        WebElement proceedLinkField = driver.findElement(By.id("proceed-link"));
-        proceedLinkField.click();
+		usernameField.sendKeys("johndoe");
+		passwordField.sendKeys("pass");
+		loginButton.click();
 
-        WebElement usernameField = driver.findElement(By.id("username"));
-        WebElement passwordField = driver.findElement(By.id("password"));
-        WebElement loginButton = driver.findElement(By.id("loginButton"));
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dailywork")));
 
-        usernameField.sendKeys("johndoe");
-        passwordField.sendKeys("pass");
-        loginButton.click();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dailywork")));
-        
+		assertTrue(driver.getCurrentUrl().endsWith("/dailywork"));
         
         WebElement button = driver.findElement(By.cssSelector("button[data-bs-target='#createModal']"));
         button.click();
@@ -95,11 +107,11 @@ public class TicketTest {
 
         saveButton.click();
         
-        wait.until(ExpectedConditions.urlMatches(Pattern.compile("https://localhost:8443/tickets/\\d+").toString()));
+        wait.until(ExpectedConditions.urlMatches(Pattern.compile("https://localhost:" + this.port + "/tickets/(\\d+)").toString()));
 
         String currentUrl = driver.getCurrentUrl();
 
-        Pattern pattern = Pattern.compile("https://localhost:8443/tickets/(\\d+)");
+        Pattern pattern = Pattern.compile("https://localhost:" + this.port + "/tickets/(\\d+)");
         Matcher matcher = pattern.matcher(currentUrl);
 
         String ticketId = null;
@@ -111,35 +123,25 @@ public class TicketTest {
             System.out.println("No se encontró el ID del ticket en la URL.");
         }
 
-        assertTrue(currentUrl.matches("https://localhost:8443/tickets/\\d+"), "La URL de redirección no es la esperada: " + currentUrl);
+        assertTrue(currentUrl.matches("https://localhost:" + this.port + "/tickets/\\d+"), "La URL de redirección no es la esperada: " + currentUrl);
 
         System.out.println("El último número de la URL es: " + ticketId);
-        
-        return ticketId;
-    }
-    
-    public void test2_FindTicket(String id) {
+
     	
-        driver.get("https://localhost:8443/login");
+    	driver.get("https://localhost:" + this.port + "/login");
+    	
+		WebElement usernameField2 = driver.findElement(By.id("username"));
+		WebElement passwordField2 = driver.findElement(By.id("password"));
+		WebElement loginButton2 = driver.findElement(By.id("loginButton"));
 
-        WebElement usernameField = driver.findElement(By.id("username"));
-        WebElement passwordField = driver.findElement(By.id("password"));
-        WebElement loginButton = driver.findElement(By.id("loginButton"));
+        usernameField2.sendKeys("janedoe");
+        passwordField2.sendKeys("adminpass");
+        loginButton2.click();
 
-        usernameField.sendKeys("janedoe");
-        passwordField.sendKeys("adminpass");
-        loginButton.click();
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(2));
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dailywork")));
         
-        driver.get("https://localhost:8443/tickets/" + id);
-        
-    }
-    
-    
-    public void test3_AssignTicket() {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        driver.get("https://localhost:" + this.port + "/tickets/" + ticketId);
+
         WebElement assignButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("assignButton")));
         assignButton.click();
         
@@ -156,10 +158,7 @@ public class TicketTest {
 
         WebElement assignedEmployee = driver.findElement(By.id("employeeUserAssign"));
         assertEquals("janedoe", assignedEmployee.getText(), "El ticket no se ha asignado correctamente");
-        
-    }
 
-    public void test4_StatusTicket() {
         WebElement changeStatusButton = driver.findElement(By.id("changeStatusButton"));
         changeStatusButton.click();
 
@@ -169,32 +168,25 @@ public class TicketTest {
         wait.until(ExpectedConditions.textToBePresentInElementLocated(By.id("ticketStatus"), "Resolved"));
         WebElement statusDisplay = driver.findElement(By.id("ticketStatus"));
         assertEquals("Resolved", statusDisplay.getText());
-    }
-    
-    public void test5_EditTicket() {
+
         WebElement editButton = driver.findElement(By.id("editButton"));
         editButton.click();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(3));
         WebElement editModal = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("editModal")));
         assertTrue(editModal.isDisplayed());
 
-        WebElement descriptionField = driver.findElement(By.id("editTicketDescription"));
-        descriptionField.clear();
-        descriptionField.sendKeys("Nueva descripción del ticket");
+        WebElement descriptionFieldEdit = driver.findElement(By.id("editTicketDescription"));
+        descriptionFieldEdit.clear();
+        descriptionFieldEdit.sendKeys("Nueva descripción del ticket");
 
         WebElement saveChangesButton = driver.findElement(By.id("saveChangesButton"));
         saveChangesButton.click();
         
         WebElement updatedDescriptionField = driver.findElement(By.id("editTicketDescription"));
         assertEquals("Nueva descripción del ticket", updatedDescriptionField.getAttribute("value"));
-    
-    }
-    
-    public void test6_DeleteTicket(String id) {
-    	driver.get("https://localhost:8443/tickets/" + id);
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    	driver.get("https://localhost:" + this.port + "/tickets/" + ticketId);
+
         WebElement deleteButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("deleteButton")));
         
         deleteButton.click();
@@ -211,16 +203,6 @@ public class TicketTest {
 
 
     }
-    
-    
-    @Test
-    public void test_ticket() {
-    	String id = test1_CreateTicket();
-    	test2_FindTicket(id);
-    	test3_AssignTicket();
-    	test4_StatusTicket();
-    	test5_EditTicket();
-    	test6_DeleteTicket(id);
-    }
+
 }
 
