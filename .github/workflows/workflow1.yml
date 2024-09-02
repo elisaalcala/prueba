@@ -1,54 +1,54 @@
-name: Continuous integration example
+name: Maven CI/CD
 
 on:
   push:
+    branches:
+      - main  # Ejecuta este workflow cuando haya un push a la rama principal
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     services:
-      temp-mysql:
+      mysql:
         image: mysql:8.0
-        ports:
-          - 3306:3306
         env:
           MYSQL_ROOT_PASSWORD: 3301
           MYSQL_DATABASE: alcalapp_db
-        options: >-
-          --health-cmd="mysqladmin ping --silent"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v2
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'  # Cambiamos a JDK 17
+        distribution: 'temurin'
 
-      - name: Cache Maven packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+    - name: Cache Maven packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.m2/repository
+        key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-
 
-      - name: Wait for MySQL to be ready
-        run: |
-          until docker exec ${{ job.services.temp-mysql.id }} mysqladmin ping --silent; do
-            echo "Waiting for MySQL..."
-            sleep 3
-          done
+    - name: Build with Maven
+      run: mvn clean install --file pom.xml
 
-      - name: Run tests
-        env:
-          DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
-          DB_USERNAME: root
-          DB_PASSWORD: 3301
-        run: mvn test
+    - name: Run tests
+      run: mvn test
+
+    - name: Run Spring Boot application
+      run: mvn spring-boot:run &
+      env:
+        DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
+        DB_USERNAME: root
+        DB_PASSWORD: 3301
