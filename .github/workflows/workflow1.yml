@@ -24,7 +24,7 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
-        java-version: '17'  # Cambiamos a JDK 17
+        java-version: '17'
         distribution: 'temurin'
 
     - name: Cache Maven packages
@@ -41,9 +41,16 @@ jobs:
     - name: Run tests
       run: mvn test
 
+    - name: Wait for MySQL to be ready
+      run: |
+        until mysqladmin ping -h localhost --silent; do
+          echo "Waiting for MySQL to be ready..."
+          sleep 5
+        done
+
     - name: Run Spring Boot application
-      run: mvn spring-boot:run &
       env:
         DB_URL: jdbc:mysql://localhost:3306/alcalapp_db
         DB_USERNAME: root
         DB_PASSWORD: 3301
+      run: mvn spring-boot:run
