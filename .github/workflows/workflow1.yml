@@ -2,11 +2,6 @@ name: Maven CI/CD
 
 on:
   push:
-    branches:
-      - main  # Ejecuta este workflow cuando haya un push a la rama principal
-  pull_request:
-    branches:
-      - main
 
 jobs:
   build:
