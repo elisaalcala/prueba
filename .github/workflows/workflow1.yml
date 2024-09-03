@@ -9,7 +9,7 @@ jobs:
 
     services:
       mysql:
-        image: mysql:8.0
+        image: elisaalcala/mydb:latest
         env:
           MYSQL_ROOT_PASSWORD: 3301
           MYSQL_DATABASE: alcalapp_db
