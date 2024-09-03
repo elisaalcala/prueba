@@ -17,6 +17,11 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
 
+    env: # Variables de entorno globales
+      DB_URL: jdbc:mysql://localhost:3306/alcalapp_db
+      DB_USERNAME: root
+      DB_PASSWORD: 3301
+
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
@@ -35,12 +40,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
-    - name: Build with Maven
-      run: mvn clean install --file pom.xml
-
-    - name: Run tests
-      run: mvn test
-
     - name: Wait for MySQL to be ready
       run: |
         until mysqladmin ping -h localhost --silent; do
@@ -48,9 +47,11 @@ jobs:
           sleep 5
         done
 
+    - name: Build with Maven
+      run: mvn clean install --file pom.xml
+
+    - name: Run tests
+      run: mvn test
+
     - name: Run Spring Boot application
-      env:
-        DB_URL: jdbc:mysql://localhost:3306/alcalapp_db
-        DB_USERNAME: root
-        DB_PASSWORD: 3301
       run: mvn spring-boot:run
