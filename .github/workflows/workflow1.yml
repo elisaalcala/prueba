@@ -40,13 +40,6 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-maven-
 
-    - name: Wait for MySQL to be ready
-      run: |
-        until mysqladmin ping -h localhost --silent; do
-          echo "Waiting for MySQL to be ready..."
-          sleep 5
-        done
-
     - name: Build with Maven
       run: mvn clean install --file pom.xml
 
