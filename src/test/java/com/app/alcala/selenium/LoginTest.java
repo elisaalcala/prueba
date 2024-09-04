@@ -51,7 +51,7 @@ public class LoginTest {
 	@BeforeEach
 	public void setUpTest() {
 		ChromeOptions options = new ChromeOptions();
-//        options.addArguments("--headless");
+        options.addArguments("--headless");
 		options.addArguments("--allow-insecure-localhost");
 		options.addArguments("--disable-gpu");
 
