@@ -15,5 +15,9 @@ public interface TeamService {
 	Team deleteTicket(Team teamQuit, Ticket ticket);
 
 	Team deleteProject(Team team, Project project);
+	
+	Team save(Team team);
+
+	void delete(Team teamDelete);
 
 }

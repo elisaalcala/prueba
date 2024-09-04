@@ -75,4 +75,10 @@ public class EmployeeServiceImpl implements EmployeeService{
 		return workPerEmployee;
 	}
 
+	@Override
+	public void delete(Employee employeeDelete) {
+		employeeRepository.delete(employeeDelete);
+		
+	}
+
 }

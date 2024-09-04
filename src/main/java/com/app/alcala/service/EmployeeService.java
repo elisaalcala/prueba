@@ -18,6 +18,8 @@ public interface EmployeeService {
 	Employee deleteProject(Employee employeeAssign, Project project);
 
 	WorkPerEmployee calculateWorkLoad(Employee employee);
+
+	void delete(Employee employeeDelete);
 	
 
 

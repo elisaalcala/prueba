@@ -39,5 +39,15 @@ public class TeamServiceImpl implements TeamService{
 		teamQuit.getProjectMapTeam().remove(project.getIdProject());
 		return teamRepository.save(teamQuit);
 	}
+
+	@Override
+	public Team save(Team team) {
+		return teamRepository.save(team);
+	}
+
+	@Override
+	public void delete(Team teamDelete) {
+		teamRepository.delete(teamDelete);
+	}
 	
 }
