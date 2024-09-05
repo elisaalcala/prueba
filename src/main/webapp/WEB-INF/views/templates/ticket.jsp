@@ -170,7 +170,7 @@
                   Descripcion
               </div>
               <div class="row textarea-height">
-                <textarea class="form-control" readonly>${ticket.descriptionTicket}</textarea>
+                <textarea class="form-control" id="descriptionTicket"readonly>${ticket.descriptionTicket}</textarea>
             </div>
               
           </div>
