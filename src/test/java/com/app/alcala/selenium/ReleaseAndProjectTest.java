@@ -116,7 +116,7 @@ public class ReleaseAndProjectTest {
         assertTrue(modal.isDisplayed(), "Modal did not open on button click");
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        LocalDate initialDate = LocalDate.of(2023, 6, 1);
+        LocalDate initialDate = LocalDate.of(2023, 5, 1);
         LocalDate requirementsDate = LocalDate.of(2023, 6, 10);
         LocalDate assignmentDate = LocalDate.of(2023, 6, 15);
         LocalDate developDate = LocalDate.of(2023, 7, 1);
