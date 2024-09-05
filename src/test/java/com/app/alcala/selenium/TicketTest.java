@@ -59,6 +59,7 @@ public class TicketTest {
         options.addArguments("--headless");
         options.addArguments("--allow-insecure-localhost");
         options.addArguments("--disable-gpu");
+	options.addArguments("--window-size=1920,1080");
 
         driver = new ChromeDriver(options);
         wait = new WebDriverWait(driver, Duration.ofSeconds(7));
