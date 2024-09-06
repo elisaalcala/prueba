@@ -18,7 +18,7 @@ jobs:
         options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
 
     env: # Variables de entorno globales
-      DB_URL: jdbc:mysql://localhost:3306/alcalapp_db
+      DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
       DB_USERNAME: root
       DB_PASSWORD: 3301
 
