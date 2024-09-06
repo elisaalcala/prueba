@@ -2,6 +2,9 @@ name: Maven CI/CD
 
 on:
   push:
+    branches:
+      - master
+      - develop
 
 jobs:
   build:
@@ -17,7 +20,7 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
 
-    env: # Variables de entorno globales
+    env: # Global environment variables
       DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
       DB_USERNAME: root
       DB_PASSWORD: 3301
