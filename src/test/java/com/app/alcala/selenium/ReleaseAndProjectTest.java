@@ -117,11 +117,11 @@ public class ReleaseAndProjectTest {
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
         LocalDate initialDate = LocalDate.of(2024, 5, 1);
-        LocalDate requirementsDate = LocalDate.of(2024, 6, 10);
-        LocalDate assignmentDate = LocalDate.of(2024, 6, 15);
+        LocalDate requirementsDate = LocalDate.of(2024, 6, 1);
+        LocalDate assignmentDate = LocalDate.of(2024, 6, 5);
         LocalDate developDate = LocalDate.of(2024, 7, 1);
-        LocalDate tstDate = LocalDate.of(2024, 7, 15);
-        LocalDate uatDate = LocalDate.of(2024, 7, 20);
+        LocalDate tstDate = LocalDate.of(2024, 7, 5);
+        LocalDate uatDate = LocalDate.of(2024, 7, 7);
         LocalDate proDate = LocalDate.of(2024, 8, 1);
 
         driver.findElement(By.id("createInitialDate")).sendKeys(initialDate.format(formatter));
