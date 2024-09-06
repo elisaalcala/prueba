@@ -45,6 +45,3 @@ jobs:
 
     - name: Run tests
       run: mvn test
-
-    - name: Run Spring Boot application
-      run: mvn spring-boot:run
