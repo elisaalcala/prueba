@@ -17,6 +17,13 @@
 	<properties>
 		<java.version>17</java.version>
 	</properties>
+	
+	<scm>
+		<connection>scm:git:https://github.com/elisaalcala/prueba.git</connection>
+		<developerConnection>scm:git:git@github.com:elisaalcala/prueba.git</developerConnection>
+		<url>https://github.com/elisaalcala/prueba</url>
+	</scm>
+	
 	<repositories>
 		<repository>
 			<id>central</id>
@@ -150,8 +157,7 @@
 				<version>1.11.3</version>
 				<configuration>
 					<connectionType>connection</connectionType>
-					<developerConnectionUrl>
-						scm:git:git@github.com:elisaalcala/prueba.git</developerConnectionUrl>
+					<developerConnectionUrl>scm:git:git@github.com:elisaalcala/prueba.git</developerConnectionUrl>
 				</configuration>
 			</plugin>
 		</plugins>
