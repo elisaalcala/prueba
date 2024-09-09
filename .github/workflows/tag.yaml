@@ -5,7 +5,7 @@ on:
     branches:
       - master
       - develop
-
+      
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -28,6 +28,6 @@ jobs:
       - name: Build and Release
         env:
           MAVEN_OPTS: "-Xmx1024m"
-        run: mvn clean release:prepare release:perform -B
-        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn clean release:prepare release:perform -B
+
