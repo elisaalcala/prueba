@@ -9,6 +9,21 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: elisaalcala/mydb:latest
+        env:
+          MYSQL_ROOT_PASSWORD: 3301
+          MYSQL_DATABASE: alcalapp_db
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    env: # Global environment
+      DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
+      DB_USERNAME: root
+      DB_PASSWORD: 3301
 
     steps:
       - name: Checkout repository
