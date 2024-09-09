@@ -39,12 +39,12 @@ jobs:
         run: |
           git config --global user.email "elisaalcgue@gmail.com"
           git config --global user.name "elisaalcala"
-          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/elisaalcala/prueba.git
+          git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/elisaalcala/prueba.git
     
       - name: Build and Release
         env:
           MAVEN_OPTS: "-Xmx1024m"
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GIT_TOKEN }}
           DB_URL: ${{ env.DB_URL }}
           DB_USERNAME: ${{ env.DB_USERNAME }}
           DB_PASSWORD: ${{ env.DB_PASSWORD }}
