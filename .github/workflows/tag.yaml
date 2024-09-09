@@ -39,6 +39,7 @@ jobs:
         run: |
           git config --global user.email "elisaalcgue@gmail.com"
           git config --global user.name "elisaalcala"
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/elisaalcala/prueba.git
     
       - name: Build and Release
         env:
