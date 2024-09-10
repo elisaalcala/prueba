@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.app</groupId>
 	<artifactId>alcala</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.3-SNAPSHOT</version>
 	<name>alcala</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -148,8 +148,6 @@
 					<tagNameFormat>@{project.version}</tagNameFormat>
 					<releaseVersionFormat>@{project.version}</releaseVersionFormat>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-					<pushChanges>false</pushChanges> <!-- Evita que los cambios
-					se empujen automáticamente -->
 				</configuration>
 			</plugin>
 		</plugins>
