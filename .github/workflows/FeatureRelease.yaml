@@ -1,13 +1,13 @@
-name: Maven Release
+name: Feature Release
 
 on:
   push:
     branches:
-      - master
-      - develop
-      
+      - 'feature/*'  # Solo se activa en pushes a ramas 'feature/*'
+
 jobs:
   release:
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"  # Asegura que no es un commit automático del workflow 'Develop Release'
     runs-on: ubuntu-latest
     
     services:
@@ -24,7 +24,7 @@ jobs:
       DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
       DB_USERNAME: root
       DB_PASSWORD: 3301
-
+      
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -41,25 +41,17 @@ jobs:
           CURRENT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
           echo "CURRENT_VERSION=${CURRENT_VERSION}" >> $GITHUB_ENV
 
-      - name: Increment Version
+      - name: Increment Patch Version
         run: |
-          if [[ "${GITHUB_REF}" == "refs/heads/feature/"* ]]; then
-            NEW_VERSION=$(echo ${{ env.CURRENT_VERSION }} | awk -F. -v OFS=. '{$NF++;print}' | sed 's/-SNAPSHOT//')
-            mvn versions:set -DnewVersion=$NEW_VERSION-SNAPSHOT
-          elif [[ "${GITHUB_REF}" == "refs/heads/develop" ]]; then
-            NEW_VERSION=$(echo ${{ env.CURRENT_VERSION }} | awk -F. -v OFS=. '{$(NF-1)++; $(NF)=0;print}' | sed 's/-SNAPSHOT//')
-            mvn versions:set -DnewVersion=$NEW_VERSION-SNAPSHOT
-          elif [[ "${GITHUB_REF}" == "refs/heads/master" ]]; then
-            NEW_VERSION=$(echo ${{ env.CURRENT_VERSION }} | awk -F. -v OFS=. '{$(NF-2)++; $(NF-1)=0; $(NF)=0;print}' | sed 's/-SNAPSHOT//')
-            mvn versions:set -DnewVersion=$NEW_VERSION
-          fi
+          NEW_VERSION=$(echo ${{ env.CURRENT_VERSION }} | awk -F. -v OFS=. '{$NF++;print}' | sed 's/-SNAPSHOT//')
+          mvn versions:set -DnewVersion=$NEW_VERSION-SNAPSHOT
 
       - name: Commit and push changes
         run: |
           git config --global user.name "elisaalcala"
           git config --global user.email "elisaalcgue@gmail.com"
           git add pom.xml
-          git commit -m "Update version"
-          git push
+          git commit -m "Update patch version [skip ci]"
+          git push origin HEAD
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
