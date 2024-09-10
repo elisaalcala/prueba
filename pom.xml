@@ -148,19 +148,8 @@
 					<tagNameFormat>@{project.version}</tagNameFormat>
 					<releaseVersionFormat>@{project.version}</releaseVersionFormat>
 					<autoVersionSubmodules>true</autoVersionSubmodules>
-				</configuration>
-			</plugin>
-			<!-- Plugin para integrar con el control de versiones (SCM) -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-scm-plugin</artifactId>
-				<version>1.11.3</version>
-				<configuration>
-					<connectionType>connection</connectionType>
-					<connection>
-						scm:git:https://github.com/elisaalcala/prueba.git</connection>
-					<developerConnection>
-						scm:git:https://github.com/elisaalcala/prueba.git</developerConnection>
+					<pushChanges>false</pushChanges> <!-- Evita que los cambios
+					se empujen automáticamente -->
 				</configuration>
 			</plugin>
 		</plugins>

@@ -20,11 +20,10 @@ jobs:
           - 3306:3306
         options: --health-cmd="mysqladmin ping -h localhost" --health-interval=10s --health-timeout=5s --health-retries=3
 
-    env:
+    env: # Global environment
       DB_URL: jdbc:mysql://localhost:3306/alcalapp_db?serverTimezone=UTC
       DB_USERNAME: root
       DB_PASSWORD: 3301
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     steps:
       - name: Checkout repository
@@ -45,7 +44,8 @@ jobs:
       - name: Build and Release
         env:
           MAVEN_OPTS: "-Xmx1024m"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DB_URL: ${{ env.DB_URL }}
           DB_USERNAME: ${{ env.DB_USERNAME }}
           DB_PASSWORD: ${{ env.DB_PASSWORD }}
-        run: mvn clean release:prepare release:perform -B
+        run: mvn clean release:prepare -B
