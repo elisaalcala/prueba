@@ -9,7 +9,7 @@
 	</parent>
 	<groupId>com.app</groupId>
 	<artifactId>alcala</artifactId>
-	<version>0.0.5-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>alcala</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
