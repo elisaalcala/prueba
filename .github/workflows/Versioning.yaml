@@ -39,13 +39,13 @@ jobs:
         run: mvn clean install
 
       - name: Run Semantic Versioning
-        run: mvn com.github.danielflower.mavenplugins:git-versioning-maven-plugin:version
+        run: mvn com.github.danielflower.mavenplugins:maven-git-versioning-plugin:version
 
       - name: Push version changes
         if: github.ref == 'refs/heads/master'
         run: |
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
+          git config user.name "elisaalcala"
+          git config user.email "elisaalcgue@gmail.com"
           git add pom.xml
           git commit -m "chore(release): Actualizar versión [skip ci]"
           git push origin master
