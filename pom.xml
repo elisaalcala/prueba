@@ -18,6 +18,7 @@
 		<java.version>17</java.version>
 	</properties>
 
+
 	<scm>
 		<connection>scm:git:https://github.com/elisaalcala/prueba.git</connection>
 		<developerConnection>scm:git:https://github.com/elisaalcala/prueba.git</developerConnection>
@@ -147,7 +148,7 @@
 					</dependency>
 				</dependencies>
 			</plugin>
-			<!-- Plugin para gestionar versiones de forma automática -->
+			<!-- Plugin para gestionar versiones de forma  -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
