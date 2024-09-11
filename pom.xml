@@ -27,6 +27,7 @@
 	</scm>
 
 
+
 	<repositories>
 		<repository>
 			<id>jitpack.io</id>
