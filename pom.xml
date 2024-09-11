@@ -162,7 +162,7 @@
 			<plugin>
 				<groupId>com.github.danielflower.mavenplugins</groupId>
 				<artifactId>maven-git-versioning-plugin</artifactId>
-				<version>1.13.0</version> 
+				<version>master-SNAPSHOT</version> 
 				<executions>
 					<execution>
 						<goals>
