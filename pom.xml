@@ -27,7 +27,6 @@
 	</scm>
 
 
-
 	<repositories>
 		<repository>
 			<id>jitpack.io</id>
@@ -40,7 +39,6 @@
 		</repository>
 
 	</repositories>
-
 
 
 	<dependencies>
@@ -164,18 +162,28 @@
 			</plugin>
 
 			<plugin>
-				<groupId>com.github.danielflower.mavenplugins</groupId>
-				<artifactId>maven-git-versioning-plugin</artifactId>
-				<version>master-SNAPSHOT</version> 
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.8</version>
 				<executions>
+					<!-- Añade el agente JaCoCo para recopilar datos de
+					cobertura -->
 					<execution>
 						<goals>
-							<goal>version</goal>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<!-- Genera el reporte de cobertura después de la ejecución
+					de pruebas -->
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-
 		</plugins>
 	</build>
 
