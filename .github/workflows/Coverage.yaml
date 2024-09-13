@@ -49,9 +49,18 @@ jobs:
     - name: Check code coverage
       run: |
         mvn jacoco:report # Genera el informe de cobertura de JaCoCo
-        COVERAGE=$(grep -oP '<counter type="INSTRUCTION" missed="\d+" covered="\d+"' target/site/jacoco/jacoco.xml | sed -E 's/.*covered="([0-9]+)".*/\1/')
-        if [ "$COVERAGE" -lt 80 ]; then
-          echo "Code coverage is below 80% ($COVERAGE%). Failing the build."
+        COVERAGE=$(grep -oP '<counter type="INSTRUCTION" missed="\d+" covered="\d+"' target/site/jacoco/jacoco.xml | \
+                    awk -F'covered="' '{sum += $2} END {print sum}')
+        TOTAL=$(grep -oP '<counter type="INSTRUCTION" missed="\d+" covered="\d+"' target/site/jacoco/jacoco.xml | \
+                awk -F'missed="' '{sum += $2} END {print sum}')
+        if [ "$TOTAL" -eq 0 ]; then
+          echo "No coverage data found. Failing the build."
           exit 1
         fi
+        COVERAGE_PERCENT=$(( 100 * COVERAGE / TOTAL ))
+        if [ "$COVERAGE_PERCENT" -lt 80 ]; then
+          echo "Code coverage is below 80% ($COVERAGE_PERCENT%). Failing the build."
+          exit 1
+        fi
+
 
